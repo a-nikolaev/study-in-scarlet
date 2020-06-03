@@ -1,0 +1,119 @@
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In this tutorial, we will be computing the similarity between the sorting programs featured in the article
+<a href="https://www.cs.dartmouth.edu/~doug/tinysort.html">The tiniest C sort function?</a>. 
+Let’s assume that all of those programs are saved in the folder <code>./example/</code> under the names <code>1.c</code> … <code>24.c</code>.</p>
+
+<p><em>(<strong>!</strong> Each command will be provided in two variants, as a full command and as its <code>./speck.rb</code> shorthand.)</em></p>
+
+<h2 id="basics">Basics</h2>
+
+<p>To compute the similarity between files and render a diagram with the default threshold 0.7:</p>
+
+<pre><code>./scarlet.rb ./example/*.c | ./make-dot.rb | dot -Tpng -o out1.png
+./speck.rb 's m dout1.png' ./example/*.c
+</code></pre>
+
+<p><img src="./img/tut1.png" alt="" /></p>
+
+<p>We can see that, for example, programs <code>7.c</code> and <code>8.c</code> are identical (the latter is in fact the same s the former, but using single-letter variables).
+After lowering the threshold to 0.1, we observe:</p>
+
+<pre><code>./scarlet.rb ./example/*.c | ./make-dot.rb 0.1 | dot -Tpng -o out2.png
+./speck.rb 's m0.1 dout2.png' ./example/*.c
+</code></pre>
+
+<p><img src="./img/tut2.png" alt="" /></p>
+
+<h2 id="shortening-filenames-and-anonymization">Shortening filenames and anonymization</h2>
+
+<p>By piping the output of <code>./scarlet.rb</code> through <code>./shorten.rb</code>, we remove common prefix and common suffix in the shown filenames:</p>
+
+<pre><code>./scarlet.rb ./example/*.c | ./shorten.rb | ./make-dot.rb 0.1 | dot -Tpng -o out3.png
+./speck.rb 's h m0.1 dout3.png' ./example/*.c
+</code></pre>
+
+<p>(This command will produce the same diagram, but file extensions <code>.c</code> will be removed from all node labels.)</p>
+
+<p>To anonymize the node labels, use <code>./anonymize.rb</code>:</p>
+
+<pre><code>./scarlet.rb ./example/*.c | ./anonymize.rb | ./make-dot.rb 0.1 | dot -Tpng -o out4.png
+./speck.rb 's a m0.1 dout4.png' ./example/*.c
+</code></pre>
+
+<p><img src="./img/tut4.png" alt="" /></p>
+
+<h2 id="interoperability-with-moss">Interoperability with MOSS</h2>
+
+<p>After running MOSS:</p>
+
+<pre><code>moss.pl -l c -m 100 ./example/*.c
+</code></pre>
+
+<p>It command responds with an HTML report file (let’s call it <code>moss.html</code>). This file can be used to generate the same diagrams as follows
+(we read score from the column <code>6</code> and set the threshold to <code>0.0</code>, so that every pair reported by MOSS is shown):</p>
+
+<pre><code>cat moss.html | ./table-from-moss.rb | ./make-dot.rb 0.0 6 | dot -Tpng -o out5.png
+cat moss.html | ./speck.rb 't m0.0,6 dout5.png'
+</code></pre>
+
+<p><img src="./img/tut5.png" alt="" /></p>
+
+<p>Recall that the filenames can be automatically shortened:</p>
+
+<pre><code>cat moss.html | ./table-from-moss.rb | ./shorten.rb | ./make-dot.rb 0.0 6 | dot -Tpng -o out6.png
+cat moss.html | ./speck.rb 't h m0.0,6 dout6.png'
+</code></pre>
+
+<p><img src="./img/tut6.png" alt="" /></p>
+
+<p>Note that Scarlet shows an almost identical network structure if we raise its threshold to <code>0.35</code>:</p>
+
+<pre><code>./scarlet.rb ./example/*.c | ./shorten.rb | ./make-dot.rb 0.35 | dot -Tpng -o out7.png
+./speck.rb 's h m0.35 dout7.png' ./example/*.c
+</code></pre>
+
+<p><img src="./img/tut7.png" alt="" /></p>
+
+<h2 id="filtering">Filtering</h2>
+
+<p>Assume that program <code>10.c</code> is special, it was given to the students as an example, and some submitted it with no changes 
+or with only minor inconsequential modifications. Then we would like to filter out all programs that resemble this example program.</p>
+
+<p>We can do so by removing <code>10.c</code> and all its neighbors (with the similarity score &gt;= 0.6) with the following command:</p>
+
+<pre><code>./scarlet.rb ./example/*.c | ./filter.rb 10.c 0.6 | ./make-dot.rb 0.1 | dot -Tpng -o out8.png
+./speck.rb 's f10.c,0.6 m0.1 dout8.png' ./example/*.c
+</code></pre>
+
+<p>As a result, programs <code>9.c</code>, <code>10.c</code>, and <code>11.c</code> got eliminated:</p>
+
+<p><img src="./img/tut8.png" alt="" /></p>
+
+<p>Note that <code>./filter.rb</code> is designed to look for the sprcified pattern (<code>10.c</code>), which does not have to be a full filename.
+For example, we could use <code>10</code> instead, and it would still work exactly the same (as long as the pattern matches a unique filename):</p>
+
+<pre><code>./scarlet.rb ./example/*.c | ./filter.rb 10 0.6 | ./make-dot.rb 0.1 | dot -Tpng -o out8.png
+./speck.rb 's f10,0.6 m0.1 dout8.png' ./example/*.c
+</code></pre>
+
+<p>The fact that we don’t have to provide full filename can be convenient, but it can also become a problem if we need to eliminate
+a program named, for example, <code>5.c</code>, since pattern <code>5.c</code> will be matched by two files: <code>5.c</code> and <code>15.c</code>.</p>
+
+<p>One solution is to replace <code>5.c</code> in the output table with a different name (e.g. <code>ABC.c</code>). Let’s use <code>awk</code>:</p>
+
+<pre><code>./scarlet.rb ./example/*.c | awk '{sub(/\&lt;5.c\&gt;/, "ABC.c")}1' |./filter.rb ABC 0.4 | ./make-dot.rb 0.1 | dot -Tpng -o out9.png
+./speck.rb 's' ./example/*.c | awk '{sub(/\&lt;5.c\&gt;/, "ABC.c")}1' | ./speck.rb 'fABC,0.4 m0.1 dout9.png'
+</code></pre>
+
+<p>or <code>sed</code> <a href="https://stackoverflow.com/questions/1032023/sed-whole-word-search-and-replace">(see StackOverflow explanation)</a> to make such a substitution:</p>
+
+<pre><code>./scarlet.rb ./example/*.c | sed 's/\b5.c\b/ABC.c/g' |./filter.rb ABC 0.4 | ./make-dot.rb 0.1 | dot -Tpng -o out9.png
+./speck.rb 's' ./example/*.c | sed 's/\b5.c\b/ABC.c/g' | ./speck.rb 'fABC,0.4 m0.1 dout9.png'
+</code></pre>
+
+<p><img src="./img/tut9.png" alt="" /></p>
+
+<p>Since we chose filtering threshold <code>0.4</code>, two nodes, <code>5.c</code> and <code>6.c</code>, were removed. Also observe that node <code>15.c</code> was not affected.</p>
+
