@@ -2,7 +2,7 @@
 
 **Study in Scarlet** is a simple Unix-friendly toolkit for plagiarism detection.
 
-The fundamental idea is to use lexers from a code highlighter [Rouge](https://github.com/rouge-ruby/rouge) 
+The program is based on the idea is to use lexers from the code highlighter [Rouge](https://github.com/rouge-ruby/rouge) 
 to convert each source code file into a sequence of tokens (while removing variable names, comments, 
 and superfluous punctuation):
 
