@@ -1,4 +1,4 @@
-#! /bin/env ruby
+#! /usr/bin/env ruby
 
 # Converts HTML report produced by MOSS into a Scarlet-like table according to the format:
 #

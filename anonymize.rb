@@ -1,4 +1,4 @@
-#! /bin/env ruby
+#! /usr/bin/env ruby
 
 # Anonymizes filenames in the table by replacing them with unique 3-letter 
 # strings (the number of letters will increase to 4, 5, etc. if need be).

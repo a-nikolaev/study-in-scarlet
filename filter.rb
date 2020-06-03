@@ -1,4 +1,4 @@
-#! /bin/env ruby
+#! /usr/bin/env ruby
 
 # Eliminates files that are similar to a given file (i.e. an example program, similarity with which
 # does not constitute plagiarism).

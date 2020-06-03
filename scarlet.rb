@@ -1,4 +1,4 @@
-#! /bin/env ruby
+#! /usr/bin/env ruby
 
 # Computes the similarity score between every pair of passed source code files.
 # The program tokenizes each file with lexer Rouge, and then uses Sherlock

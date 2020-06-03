@@ -1,4 +1,4 @@
-#! /bin/env ruby
+#! /usr/bin/env ruby
 
 # Produces a .dot (Graphviz) file from a similarity table
 #

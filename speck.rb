@@ -1,4 +1,4 @@
-#! /bin/env ruby
+#! /usr/bin/env ruby
 
 if ARGV.size < 1
   puts "Usage:\n\t ./speck.rb 'COMMAND' file1 file2 ...\n\n"

@@ -1,4 +1,4 @@
-#! /bin/env ruby
+#! /usr/bin/env ruby
 
 # Shortens filenames (column 1 and 2) by removing their common prefix and common suffix.
 #
