@@ -47,6 +47,23 @@ All provided scripts are summarized in the diagram below:
 
 ![Diagram](./img/diagram1.png)
 
+## How to setup
+Install Ruby gem `Rouge` for your system:
+
+    gem install rouge
+
+Build `Sherlock` in the subfolder `./better-sherlock`:
+
+    cd ./better-sherlock
+    make
+
+
+All scripts are organized to be simply executed from the current folder (such as `./scarlet.rb`). 
+If you want to property install them, you have to make two changes in the source code:
+
+- edit `scarlet.rb` with the path to the modified `sherlock` binary, and
+- edit `speck.rb` with the correct paths to all scripts.
+
 ## Study in Scarlet compared to MOSS
 
 The overall quality of plagiarism detection by _Study in Scarlet_ turns out to be comparable with [MOSS](https://theory.stanford.edu/~aiken/moss/),
@@ -71,23 +88,6 @@ which can be seamlessly incorporated into the Scarlet pipeline.
 - Scarlet plagiarism check works for any of the 140+ programming languages supported by Rouge. (One can also  reimplement `scarlet.rb` 
   in Python using Pygments to unleash the power of 500+ languages.)
 - Scarlet is open sourced, and its code is easy to follow and edit. You are encouraged to improve it for your own needs.
-
-## How to setup
-Install Ruby gem `Rouge` for your system:
-
-    gem install rouge
-
-Build `Sherlock` in the subfolder `./better-sherlock`:
-
-    cd ./better-sherlock
-    make
-
-
-All scripts are organized to be simply executed from the current folder (such as `./scarlet.rb`). 
-If you want to property install them, you have to make two changes in the source code:
-
-- edit `scarlet.rb` with the path to the modified `sherlock` binary, and
-- edit `speck.rb` with the correct paths to all scripts.
 
 ## scarlet.rb
 
@@ -199,7 +199,7 @@ A concrete example may look as follows:
     ./speck.rb 'S H M Dout.pdf' *.cpp
 
 Here,`'S H M Dout.pdf'` is a chain of short one-letter commands (followed by arguments, where needed) 
-that reads as: `Scarlet sHorten Make-dot Dot`, thus resuling in
+that reads as: `Scarlet sHorten Make-dot Dot`, thus resulting in
 
     ./scarlet.rb *.cpp | ./shorten.rb | ./make-dot.rb | dot -Tpdf -o out.pdf
    
