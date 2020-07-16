@@ -2,8 +2,10 @@
 
 **Study in Scarlet** is a simple Unix-friendly toolkit for plagiarism detection.
 
-The program first uses lexers of the code highlighter [Rouge](https://github.com/rouge-ruby/rouge) 
-to convert each source code file into a sequence of tokens (while removing variable names, comments, 
+Its main program works in two stages:
+
+First, it calls lexers of the code highlighter [Rouge](https://github.com/rouge-ruby/rouge) 
+to convert each of the supplied source code file into a sequence of tokens (while removing variable names, comments, 
 and superfluous punctuation):
 
 ![Tokenization example](./img/tokens.png)
@@ -30,7 +32,7 @@ The output will look like this (the similarity score, shown in the third column 
     prog2.cpp prog4.cpp 0.100437
     ...
 
-If compute the same similarity, and then shorten all filenames in the output, anonymized them, and draw a diagram with Graphviz, 
+To compute the same similarity, and then shorten all filenames in the output, anonymized them, and draw a diagram with Graphviz, 
 displaying only pairs with similarity >= 0.7:
 
     ./scarlet.rb *.cpp | ./shorten.rb | ./anonymize.rb | ./make-dot.rb 0.7 | dot -Tpdf -o out.pdf
